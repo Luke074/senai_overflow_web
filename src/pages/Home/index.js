@@ -3,12 +3,49 @@ import { ProfileContainer, Container, Header, Content, FeedContainer, ActionsCon
 import fotoPerfil from "../../assets/foto_perfil.png";
 import logo from "../../assets/logo.png";
 import { FaSignOutAlt } from "react-icons/fa";
+import { useEffect, useState } from "react";
+import api from "../../services/api";
+import { singOut } from "../../services/security";
+import { useHistory } from "react-router-dom";
+
+function Question({ question }) {
+    return (
+        <QuestionCard>
+            <header>
+                <img src={fotoPerfil} alt="fotoPerfil" />
+                <strong>pro {question.Student.name}</strong>
+                <p>em {question.created_at}</p>
+            </header>
+            <section>
+                <strong>{question.title}</strong>
+                <p>{question.description}</p>
+                <img src={question.image} />
+            </section>
+            <footer>
+                <h1> 11 respostas</h1>
+                <section>
+                    <header>
+                        <img src={fotoPerfil} alt="fotoPerfil" />
+                        <strong>Por fulano</strong>
+                        <p> 12/12/2012 as 12:12</p>
+                    </header>
+                    <p>Respostas para a pergunta</p>
+                </section>
+                <form>
+                    <textarea placeholder="Responda essa duvida" rows="2" required></textarea>
+                    <button>Enviar</button>
+                </form>
+
+            </footer>
+        </QuestionCard>
+    );
+}
 
 function Profile() {
     return (
         <>
             <section>
-                <img src={fotoPerfil}/>
+                <img src={fotoPerfil} alt="fotoPerfil" />
                 <a href="" >Editar Foto </a>
             </section>
             <section>
@@ -28,73 +65,38 @@ function Profile() {
 }
 
 function Home() {
+    const history = useHistory();
+
+    const [question, setQuestion] = useState([]);
+
+    useEffect(() => {
+        const loadQuestion = async () => {
+            const response = await api.get("/feed");
+
+            setQuestion(response.data);
+        }
+        loadQuestion();
+
+    }, []);
+
+    const handleSingOut = () => {
+        singOut();
+
+        history.replace("/");
+    }
+
     return (
         <Container>
             <Header>
-                <Logo src={logo}/>
-                <InconSingOut src={FaSignOutAlt} />
+                <Logo src={logo} />
+                <InconSingOut onClick={handleSingOut} />
             </Header>
             <Content>
                 <ProfileContainer>
                     <Profile />
                 </ProfileContainer>
                 <FeedContainer>
-                    <QuestionCard>
-                        <header>
-                            <img src={fotoPerfil}/>
-                            <strong>pro Luke Master abobrinha</strong>
-                            <p>em 19/03/2021 as 20:00</p>
-                        </header>
-                        <section>
-                            <strong>Titulo</strong>
-                            <p>Descricao</p>
-                            <img src="https://pbs.twimg.com/media/EddX1AIXYAA5bJx?format=jpg&name=4096x4096"/>
-                        </section>
-                        <footer>
-                            <h1> 11 respostas</h1>
-                            <section>
-                                <header>
-                                    <img src={fotoPerfil}/>
-                                    <strong>Por fulano</strong>
-                                    <p> 12/12/2012 as 12:12</p>
-                                </header>
-                                <p>Respostas para a pergunta</p>
-                            </section>
-                            <form>
-                                <textarea placeholder="Responda essa duvida" rows="2" required></textarea>
-                                <button>Enviar</button>
-                            </form>
-
-                        </footer>
-                    </QuestionCard>
-                    <QuestionCard>
-                        <header>
-                            <img src={fotoPerfil}/>
-                            <strong>pro Luke Master abobrinha</strong>
-                            <p>em 19/03/2021 as 20:00</p>
-                        </header>
-                        <section>
-                            <strong>Titulo</strong>
-                            <p>Descricao</p>
-                            <img src="https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Ahri_27.jpg"/>
-                        </section>
-                        <footer>
-                            <h1> 11 respostas</h1>
-                            <section>
-                                <header>
-                                    <img src={fotoPerfil}/>
-                                    <strong>Por fulano</strong>
-                                    <p> 12/12/2012 as 12:12</p>
-                                </header>
-                                <p>Respostas para a pergunta</p>
-                            </section>
-                            <form>
-                                <textarea placeholder="Responda essa duvida" rows="2" required></textarea>
-                                <button>Enviar</button>
-                            </form>
-
-                        </footer>
-                    </QuestionCard>
+                    {question.map((q) => (<Question question={q} />))}
                 </FeedContainer>
                 <ActionsContainer>
                     <button>Fazer uma pergunta</button>

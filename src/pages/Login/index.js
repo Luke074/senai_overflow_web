@@ -4,6 +4,7 @@ import { Link, useHistory } from "react-router-dom";
 
 import api from "../../services/api";
 import { useState } from "react";
+import { signIn } from "../../services/security";
 
 function Login() {
     const history = useHistory();
@@ -20,12 +21,13 @@ function Login() {
 
             const response = await api.post("/sessions", login);
             
-            console.log(response.date);
+            //implementar a authorização
+            signIn(response.data);
 
-            history.push("/home");            
+            history.push("/home");
         } catch (error) {
             console.error(error);
-            alert(error.response.date.error);
+            alert(error.response.data.error);
         }
 
     }
