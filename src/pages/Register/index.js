@@ -13,23 +13,31 @@ function Register() {
         name: "",
         email: "",
         password: "",
+        validPassword: "",
     });
 
     const handleInsert = async (e) => {
         e.preventDefault();
 
         try {
-            
-            const response = await api.post("/students", register);
-            console.log(response.date);
+            if (register.password !== register.validPassword)
+                return alert("as senhas não são compativeis!");
+
+            const response = await api.post("/students", {
+                ra: register.ra,
+                name: register.name,
+                email: register.email,
+                password: register.password,
+            });
+
+
+            console.log(response.data);
 
             history.push("/home");
-
         } catch (error) {
             console.error(error);
-            alert(error.response.date.error);
+            alert(error.response.data.error);
         }
-
     }
 
     const handleRegister = (e) => {
@@ -39,18 +47,29 @@ function Register() {
 
     return (
         <Container>
-            <FormLogin onChange={handleInsert}>
+            <FormLogin onSubmit={handleInsert}>
                 <Header>
                     <h1>Bem vindo ao Senai Overflow</h1>
                     <h2>informe o seus dados</h2>
                 </Header>
                 <Body>
-                    <Input id="ra" label="RA" type="text" handler={handleRegister} />
-                    <Input id="nome" label="Nome" type="text" handler={handleRegister}/>
-                    <Input id="email" label="Email" type="email" handler={handleRegister}/>
-                    <Input id="password" label="Senha" type="password" handler={handleRegister}/>
-                    <Input id="valid-password" label="Confirmar Senha" type="password" handler={handleRegister}/>
-                    <Button>Registrar</Button>
+                    <Input id="ra" label="ra" type="text" handler={handleRegister} value={register.ra} />
+                    <Input id="name" label="nome" type="text" handler={handleRegister} value={register.name} />
+                    <Input id="email" label="email" type="email" handler={handleRegister} value={register.email} />
+                    <Input id="password" label="senha" type="password" handler={handleRegister} value={register.password} />
+                    <Input id="validPassword" label="Confirmar Senha" type="password" handler={handleRegister} value={register.validPassword} />
+                    <Button
+                        disabled={
+                            !register.ra ||
+                            !register.name ||
+                            !register.email ||
+                            !register.password ||
+                            !register.validPassword ||
+                            register.password !== register.validPassword
+                        }
+                    >
+                        Registrar
+                    </Button>
                     <Link to="/">Ou, se ja tem cadastro, cique para entrar</Link>
                 </Body>
             </FormLogin>
