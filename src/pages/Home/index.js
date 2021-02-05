@@ -24,6 +24,21 @@ import Select from "../../components/select";
 import Tag from "../../components/tag";
 
 function NewQuestion() {
+  const [categories, setCategories] = useState([]);
+
+  useEffect(() => {
+    const loadCategories = async () => {
+      try {
+
+        const response = await api.get("/categories");
+        setCategories(response.data);
+      } catch (error) {
+        alert(error);
+      }
+    }
+
+    loadCategories()
+  }, []);
 
   return (
     <FormNewQuestion>
@@ -31,15 +46,11 @@ function NewQuestion() {
       <Input id="description" label="Descrição" />
       <Input id="gist" label="Gist" />
       <Select id="categories" label="Categorias">
-        <option value=""> Selecione </option>
+        <option value="">Selecione</option>
+        {categories.map((c) => {
+          <option value={c.id}>{c.description}</option>
+        })}
       </Select>
-      <div>
-        <Tag info="BackEnd"/>
-        <Tag info="BackEnd"/>
-        <Tag info="BackEnd"/>
-        <Tag info="BackEnd"/>
-        <Tag info="BackEnd"/>
-      </div>
       <input type="file" />
       <button>Enviar</button>
     </FormNewQuestion>
