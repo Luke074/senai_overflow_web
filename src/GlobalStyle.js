@@ -56,4 +56,13 @@ export const GlobalStyle = createGlobalStyle`
             color: var(--darkGray);
         }
     }
+    textarea ,select{
+        font-size: 16px;
+        padding: 7px;
+        font-weight: bold;
+        border-radius: 5px;
+
+        resize: none;
+        font-family: sans-serif;
+    }
 `;

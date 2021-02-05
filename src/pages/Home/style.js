@@ -194,7 +194,7 @@ export const Logo = styled.img`
     }
 `;
 
-export const InconSingOut = styled(FaSignOutAlt)`
+export const IconSignOut = styled(FaSignOutAlt)`
     font-size: 30px;
     margin-right: 20px;
 

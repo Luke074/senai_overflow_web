@@ -9,7 +9,7 @@ export const signIn = (user) => {
   api.defaults.headers.common["Authorization"] = `Bearer ${user.token}`;
 };
 
-export const singOut = () => {
+export const signOut = () => {
   localStorage.removeItem(USER_KEY);
 
   api.defaults.headers.common["Authorization"] = undefined;

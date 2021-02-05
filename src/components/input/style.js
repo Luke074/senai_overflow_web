@@ -34,6 +34,6 @@ export const Container = styled.div`
         color: var(--light);
         top: -25px;
         left: 5px;
-        transition: 0.5s ease-in-out;
+        transition: 0.3s ease-in-out;
     }
 `;
