@@ -35,9 +35,10 @@ function NewQuestion() {
       } catch (error) {
         alert(error);
       }
+      
     }
 
-    loadCategories()
+    loadCategories();
   }, []);
 
   return (
