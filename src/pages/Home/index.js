@@ -23,7 +23,13 @@ import { FormNewQuestion } from "../../components/modal/style";
 import Select from "../../components/select";
 import Tag from "../../components/tag";
 
-function NewQuestion() {
+function NewQuestion( {handleReload}) {
+  const [newQuestion, setNewQuestion] = useState({
+    title: "",
+    description: "",
+    gist: ""
+  });
+
   const [categories, setCategories] = useState([]);
 
   const [categoriesSel, setCategoriesSel] = useState([]);
@@ -84,12 +90,44 @@ function NewQuestion() {
     }
 
   };
+  const handlerInput = (e) => {
+    setNewQuestion({...newQuestion,[e.target.id]: e.target.value})
+  };
+
+  const handleAddNewQuestion = async (e) => {
+    e.preventDefault();
+
+    const data = new FormData();
+
+
+    data.append("title", newQuestion.title);
+    data.append("description", newQuestion.description);
+
+    const categories = categoriesSel.reduce((s, c) => (s += c.id + ","), "");
+
+    data.append("categories", categories.substr(0, categories.length -1));
+    
+    if(image) data.append("image", image);
+    if(newQuestion.gist) data.append("gist", newQuestion.gist);
+
+    try {
+      await api.post("/questions", data, {
+        headers: {
+          "Content-type": "multipart/from-data",
+        },
+      })
+
+      handleReload();
+    } catch (error) {
+      alert(error)
+    }
+  };
 
   return (
-    <FormNewQuestion>
-      <Input id="title" label="Título" />
-      <Input id="description" label="Descrição" />
-      <Input id="gist" label="Gist" />
+    <FormNewQuestion onSubmit={handleAddNewQuestion}>
+      <Input id="title" label="Título" value={newQuestion.title} handler={handlerInput}/>
+      <Input id="description" label="Descrição" value={newQuestion.description}  handler={handlerInput}/>
+      <Input id="gist" label="Gist" value={newQuestion.gist}  handler={handlerInput}/>
       <Select
         id="categories"
         label="Categorias"
@@ -163,6 +201,10 @@ function Question({ question }) {
   const [answers, setAnswers] = useState(question.Answers);
 
   const qtdAnswers = answers.length;
+
+  useEffect(() => {
+    setAnswers(question.Answers); 
+  }, [question.Answers]);
 
   const handleAddAnswer = async (e) => {
     e.preventDefault();
@@ -270,6 +312,7 @@ function Home() {
   };
 
   const handleReload = () => {
+    setShowNewQuestion(false);
     setReload(Math.random());
   };
 
@@ -277,7 +320,7 @@ function Home() {
     <>
       {showNewQuestion && (
         <Modal title="Faça uma pergunta" handleClose={() => setShowNewQuestion(false)}>
-          <NewQuestion />
+          <NewQuestion handleReload={handleReload}/>
         </Modal>
       )}
       <Container>
