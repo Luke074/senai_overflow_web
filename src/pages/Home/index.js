@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useHistory } from "react-router-dom";
 import {
   Container,
@@ -26,6 +26,13 @@ import Tag from "../../components/tag";
 function NewQuestion() {
   const [categories, setCategories] = useState([]);
 
+  const [categoriesSel, setCategoriesSel] = useState([]);
+
+  const [image, setImage] = useState(null);
+
+  const imageRef = useRef();
+  const categoriesRef = useRef();
+
   useEffect(() => {
     const loadCategories = async () => {
       try {
@@ -35,24 +42,72 @@ function NewQuestion() {
       } catch (error) {
         alert(error);
       }
-      
+
     }
 
     loadCategories();
   }, []);
+
+  const handleImage = (e) => {
+    if (e.target.files[0]) {
+      imageRef.current.src = URL.createObjectURL(e.target.files[0]);
+      imageRef.current.style.display = "flex";
+    } else {
+      imageRef.current.src = "";
+      imageRef.current.style.display = "none";
+    }
+
+    setImage(e.target.files[0]);
+  };
+
+  const handleCategories = (e) => {
+    const idSel = e.target.value;
+
+    const categorySel = categories.find((c) => c.id.toString() === idSel);
+
+    if (categorySel && !categoriesSel.includes(categorySel)) {
+      setCategoriesSel([...categoriesSel, categorySel]);
+    }
+
+    e.target[e.target.selectedIndex].disable = true;
+    e.target.value = "";
+  };
+  const handleUnselCategory = (idUnsel) => {
+    setCategoriesSel(categoriesSel.filter(c => c.id !== idUnsel));
+
+    const { options } = categoriesRef.current;
+
+    for (var i = 0; i < options.length; i++) {
+      if (options[i].value === idUnsel.toString())
+        options[i].disable = false;
+
+    }
+
+  };
 
   return (
     <FormNewQuestion>
       <Input id="title" label="Título" />
       <Input id="description" label="Descrição" />
       <Input id="gist" label="Gist" />
-      <Select id="categories" label="Categorias">
-        <option value="">Selecione</option>
-        {categories.map((c) => {
-          <option value={c.id}>{c.description}</option>
-        })}
+      <Select
+        id="categories"
+        label="Categorias"
+        handler={handleCategories}
+        ref={categoriesRef}
+      >
+        <option value="" selected disabled>Selecione</option>
+        {categories.map((c) => (
+          <option key={c.id} value={c.id}>{c.description}</option>
+        ))}
       </Select>
-      <input type="file" />
+      <div>
+        {categoriesSel.map((c) => (
+          <Tag key={c.id} info={c.description} handleClose={() => handleUnselCategory(c.id)}></Tag>
+        ))}
+      </div>
+      <input type="file" onChange={handleImage} />
+      <img alt="Pré-visualização" ref={imageRef} />
       <button>Enviar</button>
     </FormNewQuestion>
   );
@@ -196,6 +251,8 @@ function Home() {
 
   const [reload, setReload] = useState(null);
 
+  const [showNewQuestion, setShowNewQuestion] = useState()
+
   useEffect(() => {
     const loadQuestions = async () => {
       const response = await api.get("/feed");
@@ -218,9 +275,11 @@ function Home() {
 
   return (
     <>
-      <Modal title="Faça uma pergunta">
-        <NewQuestion />
-      </Modal>
+      {showNewQuestion && (
+        <Modal title="Faça uma pergunta" handleClose={() => setShowNewQuestion(false)}>
+          <NewQuestion />
+        </Modal>
+      )}
       <Container>
         <Header>
           <Logo src={logo} />
@@ -236,7 +295,7 @@ function Home() {
             ))}
           </FeedContainer>
           <ActionsContainer>
-            <button>Fazer uma pergunta</button>
+            <button onClick={() => setShowNewQuestion(true)}>Fazer uma pergunta</button>
           </ActionsContainer>
         </Content>
       </Container>
