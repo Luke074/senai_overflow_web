@@ -22,8 +22,10 @@ import Modal from "../../components/modal";
 import { FormNewQuestion } from "../../components/modal/style";
 import Select from "../../components/select";
 import Tag from "../../components/tag";
+import Loading from "../../components/Loading";
 
-function NewQuestion( {handleReload}) {
+function NewQuestion({ handleReload, handleLoading }) {
+
   const [newQuestion, setNewQuestion] = useState({
     title: "",
     description: "",
@@ -91,7 +93,7 @@ function NewQuestion( {handleReload}) {
 
   };
   const handlerInput = (e) => {
-    setNewQuestion({...newQuestion,[e.target.id]: e.target.value})
+    setNewQuestion({ ...newQuestion, [e.target.id]: e.target.value })
   };
 
   const handleAddNewQuestion = async (e) => {
@@ -105,12 +107,14 @@ function NewQuestion( {handleReload}) {
 
     const categories = categoriesSel.reduce((s, c) => (s += c.id + ","), "");
 
-    data.append("categories", categories.substr(0, categories.length -1));
-    
-    if(image) data.append("image", image);
-    if(newQuestion.gist) data.append("gist", newQuestion.gist);
+    data.append("categories", categories.substr(0, categories.length - 1));
+
+    if (image) data.append("image", image);
+    if (newQuestion.gist) data.append("gist", newQuestion.gist);
 
     try {
+      handleLoading(true);
+
       await api.post("/questions", data, {
         headers: {
           "Content-type": "multipart/from-data",
@@ -119,35 +123,39 @@ function NewQuestion( {handleReload}) {
 
       handleReload();
     } catch (error) {
+      handleLoading(false);
+
       alert(error)
     }
   };
 
   return (
-    <FormNewQuestion onSubmit={handleAddNewQuestion}>
-      <Input id="title" label="Título" value={newQuestion.title} handler={handlerInput}/>
-      <Input id="description" label="Descrição" value={newQuestion.description}  handler={handlerInput}/>
-      <Input id="gist" label="Gist" value={newQuestion.gist}  handler={handlerInput}/>
-      <Select
-        id="categories"
-        label="Categorias"
-        handler={handleCategories}
-        ref={categoriesRef}
-      >
-        <option value="" selected disabled>Selecione</option>
-        {categories.map((c) => (
-          <option key={c.id} value={c.id}>{c.description}</option>
-        ))}
-      </Select>
-      <div>
-        {categoriesSel.map((c) => (
-          <Tag key={c.id} info={c.description} handleClose={() => handleUnselCategory(c.id)}></Tag>
-        ))}
-      </div>
-      <input type="file" onChange={handleImage} />
-      <img alt="Pré-visualização" ref={imageRef} />
-      <button>Enviar</button>
-    </FormNewQuestion>
+    <>
+      <FormNewQuestion onSubmit={handleAddNewQuestion}>
+        <Input id="title" label="Título" value={newQuestion.title} handler={handlerInput} />
+        <Input id="description" label="Descrição" value={newQuestion.description} handler={handlerInput} />
+        <Input id="gist" label="Gist" value={newQuestion.gist} handler={handlerInput} />
+        <Select
+          id="categories"
+          label="Categorias"
+          handler={handleCategories}
+          ref={categoriesRef}
+        >
+          <option value="" selected disabled>Selecione</option>
+          {categories.map((c) => (
+            <option key={c.id} value={c.id}>{c.description}</option>
+          ))}
+        </Select>
+        <div>
+          {categoriesSel.map((c) => (
+            <Tag key={c.id} info={c.description} handleClose={() => handleUnselCategory(c.id)}></Tag>
+          ))}
+        </div>
+        <input type="file" onChange={handleImage} />
+        <img alt="Pré-visualização" ref={imageRef} />
+        <button>Enviar</button>
+      </FormNewQuestion>
+    </>
   );
 }
 
@@ -193,7 +201,7 @@ function Answer({ answer }) {
   );
 }
 
-function Question({ question }) {
+function Question({ question, handleLoading }) {
   const [showAnswers, setShowAnswers] = useState(false);
 
   const [newAnswer, setNewAnswer] = useState("");
@@ -203,16 +211,19 @@ function Question({ question }) {
   const qtdAnswers = answers.length;
 
   useEffect(() => {
-    setAnswers(question.Answers); 
+    setAnswers(question.Answers);
   }, [question.Answers]);
 
   const handleAddAnswer = async (e) => {
     e.preventDefault();
 
-    if (newAnswer.length < 10)
+
+    if (newAnswer.length < 10) {
       return alert("A resposta deve ter no mínimo 10 caracteres");
+    }
 
     try {
+      handleLoading(true);
       const response = await api.post(`/questions/${question.id}/answers`, {
         description: newAnswer,
       });
@@ -232,7 +243,9 @@ function Question({ question }) {
       setAnswers([...answers, answerAdded]);
 
       setNewAnswer("");
+      handleLoading(false);
     } catch (error) {
+      handleLoading(false);
       alert(error);
     }
   };
@@ -289,6 +302,8 @@ function Question({ question }) {
 function Home() {
   const history = useHistory();
 
+  const [showLoading, setShowLoading] = useState();
+
   const [questions, setQuestions] = useState([]);
 
   const [reload, setReload] = useState(null);
@@ -296,10 +311,12 @@ function Home() {
   const [showNewQuestion, setShowNewQuestion] = useState()
 
   useEffect(() => {
+    setShowLoading(true);
     const loadQuestions = async () => {
       const response = await api.get("/feed");
 
       setQuestions(response.data);
+      setShowLoading(false);
     };
 
     loadQuestions();
@@ -318,14 +335,15 @@ function Home() {
 
   return (
     <>
+      {showLoading && <Loading /> }
       {showNewQuestion && (
         <Modal title="Faça uma pergunta" handleClose={() => setShowNewQuestion(false)}>
-          <NewQuestion handleReload={handleReload}/>
+          <NewQuestion handleReload={handleReload} handleLoading={setShowLoading} />
         </Modal>
       )}
       <Container>
         <Header>
-          <Logo src={logo} />
+          <Logo src={logo} onClick={handleReload} />
           <IconSignOut onClick={handleSignOut} />
         </Header>
         <Content>
@@ -334,7 +352,7 @@ function Home() {
           </ProfileContainer>
           <FeedContainer>
             {questions.map((q) => (
-              <Question question={q} />
+              <Question question={q} handleLoading={setShowLoading} />
             ))}
           </FeedContainer>
           <ActionsContainer>
