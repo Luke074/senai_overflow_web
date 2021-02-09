@@ -109,8 +109,7 @@ export const QuestionCard = styled.article`
         }
 
         > img{
-            max-width: 100%;
-            height: 380px;
+            max-width: 80%;
             border-radius: 3px;
             align-self: center;
         }
