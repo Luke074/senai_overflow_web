@@ -17,12 +17,13 @@ import { format } from "date-fns";
 import imgProfile from "../../assets/foto_perfil.png";
 import logo from "../../assets/logo.png";
 import { api } from "../../services/api";
-import { getUser, signOut } from "../../services/security";
+import { getUser, signOut, setUser } from "../../services/security";
 import Modal from "../../components/modal";
 import { FormNewQuestion } from "../../components/modal/style";
 import Select from "../../components/select";
 import Tag from "../../components/tag";
 import Loading from "../../components/Loading";
+import { validSquaredImage } from "../../utils";
 
 function NewQuestion({ handleReload, handleLoading }) {
 
@@ -159,14 +160,47 @@ function NewQuestion({ handleReload, handleLoading }) {
   );
 }
 
-function Profile() {
-  const student = getUser();
+function Profile({ setShowLoading, handleReload, setMessage }) {
+  const [student, setStudent] = useState("");
+
+  useEffect(() => {
+    setStudent(getUser());
+  }, []);
+
+  const handleImage = async (e) => {
+
+    if (!e.target.files[0]) return;
+
+    
+    try {
+      await validSquaredImage(e.target.files[0]);
+
+      const data = new FormData();
+
+      data.append("image", e.target.files[0]);
+      setShowLoading(true);
+
+      const response = await api.post(`/students/${student.id}/images`, data);
+
+      setTimeout(() => {
+        setStudent({ ...student, image: response.data.image });
+        handleReload();
+      }, 1000)
+
+      setUser({ ...student, image: response.data.image });
+    } catch (error) {
+      alert(error);
+      setShowLoading(false);
+    }
+
+  }
 
   return (
     <>
       <section>
-        <img src={imgProfile} alt="Imagem de Perfil" />
-        <a href="#">Editar Foto</a>
+        <img src={student.image || imgProfile} alt="Imagem de Perfil" />
+        <label htmlFor="editImageProfile">Editar Foto</label>
+        <input id="editImageProfile" type="file" onChange={handleImage} />
       </section>
       <section>
         <strong>NOME:</strong>
@@ -190,7 +224,7 @@ function Answer({ answer }) {
   return (
     <section>
       <header>
-        <img src={imgProfile} />
+        <img src={answer.Student.image || imgProfile} alt="imagem perfil" />
         <strong>
           por {student.studentId === answer.Student.id ? " Você" : answer.Student.name}
         </strong>
@@ -237,6 +271,7 @@ function Question({ question, handleLoading }) {
         Student: {
           id: aluno.studentId,
           name: aluno.name,
+          image: aluno.image
         },
       };
 
@@ -255,7 +290,7 @@ function Question({ question, handleLoading }) {
   return (
     <QuestionCard>
       <header>
-        <img src={imgProfile} />
+        <img src={question.Student.image || imgProfile} />
         <strong>
           por {student.studentId === question.Student.id ? "Você" : question.Student.name}
         </strong>
@@ -335,7 +370,7 @@ function Home() {
 
   return (
     <>
-      {showLoading && <Loading /> }
+      {showLoading && <Loading />}
       {showNewQuestion && (
         <Modal title="Faça uma pergunta" handleClose={() => setShowNewQuestion(false)}>
           <NewQuestion handleReload={handleReload} handleLoading={setShowLoading} />
@@ -348,7 +383,11 @@ function Home() {
         </Header>
         <Content>
           <ProfileContainer>
-            <Profile />
+            <Profile
+              handleReload={handleReload}
+              setShowLoading={setShowLoading}
+              // setMessage={setMessage}
+            />
           </ProfileContainer>
           <FeedContainer>
             {questions.map((q) => (

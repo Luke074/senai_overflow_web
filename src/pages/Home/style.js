@@ -49,9 +49,17 @@ export const ProfileContainer = styled.div`
         width: 30%;
         border-radius: 50%;
     }
-    a {
-        color: white;
-        text-align: center;
+    label{
+        text-decoration: underline;
+        cursor: pointer;
+        transition: 0.5s;
+
+        :hover{
+            color: var(--primary);
+        }
+    }
+    input[type="file"] {
+        display: none;
     }
 `;
 
