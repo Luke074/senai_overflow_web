@@ -211,8 +211,6 @@ export const SearchBar = styled.form`
     padding: 10px;
     gap: 25px;
 
-    border: 1px solid #fff;
-
     button{
         margin-top: 10px;
         padding: 7px;
