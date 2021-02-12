@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { FaSignOutAlt} from "react-icons/fa";
+import { FaSignOutAlt, FaGithub} from "react-icons/fa";
 
 export const Container = styled.div`
     width: 100vw;
@@ -25,6 +25,7 @@ export const Header = styled.header`
 
     box-shadow: 0px 1px 5px var(--light);
 `;
+
 export const Content = styled.div`
     width: 1300px;
     padding-top: 60px;
@@ -46,7 +47,7 @@ export const ProfileContainer = styled.div`
         gap: 4px;
     }
     img {
-        width: 30%;
+        width: 40%;
         border-radius: 50%;
     }
     label{
@@ -201,6 +202,28 @@ export const Logo = styled.img`
     }
 `;
 
+export const SearchBar = styled.form`
+    width: 430px;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    padding: 10px;
+    gap: 25px;
+
+    border: 1px solid #fff;
+
+    button{
+        margin-top: 10px;
+        padding: 7px;
+
+        :hover{
+            background-color: var(--light);
+            color: black;
+        }
+    }
+`;
+
 export const IconSignOut = styled(FaSignOutAlt)`
     font-size: 30px;
     margin-right: 20px;
@@ -211,5 +234,29 @@ export const IconSignOut = styled(FaSignOutAlt)`
     :hover{
         color: var(--dark);
 
+    }
+`;
+
+export const GistIcon = styled(FaGithub)`
+    font-size: 30px;
+    margin-right: 10px;
+
+    cursor: pointer;
+
+    transition: 0.3s;
+
+    :hover{
+        color: var(--primary);
+    } 
+`;
+
+export const ContainerGist = styled.section`
+    margin-top: 10px;
+
+    h2{
+        font-size: 24px;
+        font-weight: normal;
+        text-align: center;
+        margin-bottom: 5px;
     }
 `;
