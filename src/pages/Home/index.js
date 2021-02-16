@@ -16,7 +16,7 @@ import {
   SearchBar,
 } from "./style";
 
-import Input from "../../components/input"
+import Input from "../../components/input";
 import { format } from "date-fns";
 import imgProfile from "../../assets/foto_perfil.png";
 import logo from "../../assets/logo.png";
@@ -31,11 +31,10 @@ import { validSquaredImage } from "../../utils";
 import { FaGithub } from "react-icons/fa";
 
 function NewQuestion({ handleReload, handleLoading }) {
-
   const [newQuestion, setNewQuestion] = useState({
     title: "",
     description: "",
-    gist: ""
+    gist: "",
   });
 
   const [categories, setCategories] = useState([]);
@@ -50,14 +49,12 @@ function NewQuestion({ handleReload, handleLoading }) {
   useEffect(() => {
     const loadCategories = async () => {
       try {
-
         const response = await api.get("/categories");
         setCategories(response.data);
       } catch (error) {
         alert(error);
       }
-
-    }
+    };
 
     loadCategories();
   }, []);
@@ -87,26 +84,22 @@ function NewQuestion({ handleReload, handleLoading }) {
     e.target.value = "";
   };
   const handleUnselCategory = (idUnsel) => {
-    setCategoriesSel(categoriesSel.filter(c => c.id !== idUnsel));
+    setCategoriesSel(categoriesSel.filter((c) => c.id !== idUnsel));
 
     const { options } = categoriesRef.current;
 
     for (var i = 0; i < options.length; i++) {
-      if (options[i].value === idUnsel.toString())
-        options[i].disable = false;
-
+      if (options[i].value === idUnsel.toString()) options[i].disable = false;
     }
-
   };
   const handlerInput = (e) => {
-    setNewQuestion({ ...newQuestion, [e.target.id]: e.target.value })
+    setNewQuestion({ ...newQuestion, [e.target.id]: e.target.value });
   };
 
   const handleAddNewQuestion = async (e) => {
     e.preventDefault();
 
     const data = new FormData();
-
 
     data.append("title", newQuestion.title);
     data.append("description", newQuestion.description);
@@ -125,36 +118,59 @@ function NewQuestion({ handleReload, handleLoading }) {
         headers: {
           "Content-type": "multipart/from-data",
         },
-      })
+      });
 
       handleReload();
     } catch (error) {
       handleLoading(false);
 
-      alert(error)
+      alert(error);
     }
   };
 
   return (
     <>
       <FormNewQuestion onSubmit={handleAddNewQuestion}>
-        <Input id="title" label="Título" value={newQuestion.title} handler={handlerInput} />
-        <Input id="description" label="Descrição" value={newQuestion.description} handler={handlerInput} />
-        <Input id="gist" label="Gist" value={newQuestion.gist} handler={handlerInput} />
+        <Input
+          id="title"
+          label="Título"
+          value={newQuestion.title}
+          handler={handlerInput}
+        />
+        <Input
+          id="description"
+          label="Descrição"
+          value={newQuestion.description}
+          handler={handlerInput}
+        />
+        <Input
+          id="gist"
+          label="Gist"
+          value={newQuestion.gist}
+          handler={handlerInput}
+        />
         <Select
           id="categories"
           label="Categorias"
           handler={handleCategories}
           ref={categoriesRef}
         >
-          <option value="" selected disabled>Selecione</option>
+          <option value="" selected disabled>
+            Selecione
+          </option>
           {categories.map((c) => (
-            <option key={c.id} value={c.id}>{c.description}</option>
+            <option key={c.id} value={c.id}>
+              {c.description}
+            </option>
           ))}
         </Select>
         <div>
           {categoriesSel.map((c) => (
-            <Tag key={c.id} info={c.description} handleClose={() => handleUnselCategory(c.id)}></Tag>
+            <Tag
+              key={c.id}
+              info={c.description}
+              handleClose={() => handleUnselCategory(c.id)}
+            ></Tag>
           ))}
         </div>
         <input type="file" onChange={handleImage} />
@@ -173,9 +189,7 @@ function Profile({ setShowLoading, handleReload, setMessage }) {
   }, []);
 
   const handleImage = async (e) => {
-
     if (!e.target.files[0]) return;
-
 
     try {
       await validSquaredImage(e.target.files[0]);
@@ -190,15 +204,14 @@ function Profile({ setShowLoading, handleReload, setMessage }) {
       setTimeout(() => {
         setStudent({ ...student, image: response.data.image });
         handleReload();
-      }, 1000)
+      }, 1000);
 
       setUser({ ...student, image: response.data.image });
     } catch (error) {
       alert(error);
       setShowLoading(false);
     }
-
-  }
+  };
 
   return (
     <>
@@ -231,7 +244,10 @@ function Answer({ answer }) {
       <header>
         <img src={answer.Student.image || imgProfile} alt="imagem perfil" />
         <strong>
-          por {student.studentId === answer.Student.id ? " Você" : answer.Student.name}
+          por{" "}
+          {student.studentId === answer.Student.id
+            ? " Você"
+            : answer.Student.name}
         </strong>
         <p> {format(new Date(answer.created_at), "dd/MM/yyyy 'as' HH:mm")}</p>
       </header>
@@ -256,7 +272,6 @@ function Question({ question, handleLoading, setCurrentGist }) {
   const handleAddAnswer = async (e) => {
     e.preventDefault();
 
-
     if (newAnswer.length < 10) {
       return alert("A resposta deve ter no mínimo 10 caracteres");
     }
@@ -276,7 +291,7 @@ function Question({ question, handleLoading, setCurrentGist }) {
         Student: {
           id: aluno.studentId,
           name: aluno.name,
-          image: aluno.image
+          image: aluno.image,
         },
       };
 
@@ -297,10 +312,17 @@ function Question({ question, handleLoading, setCurrentGist }) {
       <header>
         <img src={question.Student.image || imgProfile} />
         <strong>
-          por {student.studentId === question.Student.id ? "Você" : question.Student.name}
+          por{" "}
+          {student.studentId === question.Student.id
+            ? "Você"
+            : question.Student.name}
         </strong>
-        <p>em {format(new Date(question.created_at), "dd/MM/yyyy 'as' HH:mm")}</p>
-        {question.gist && <GistIcon onClick={() => setCurrentGist(question.gist)} />}
+        <p>
+          em {format(new Date(question.created_at), "dd/MM/yyyy 'as' HH:mm")}
+        </p>
+        {question.gist && (
+          <GistIcon onClick={() => setCurrentGist(question.gist)} />
+        )}
       </header>
       <section>
         <strong>{question.title}</strong>
@@ -312,11 +334,11 @@ function Question({ question, handleLoading, setCurrentGist }) {
           {qtdAnswers === 0 ? (
             "Seja o primeiro a responder"
           ) : (
-              <>
-                {qtdAnswers}
-                {qtdAnswers > 1 ? " Respostas" : " Resposta"}
-              </>
-            )}
+            <>
+              {qtdAnswers}
+              {qtdAnswers > 1 ? " Respostas" : " Resposta"}
+            </>
+          )}
         </h1>
         {showAnswers && (
           <>
@@ -341,17 +363,19 @@ function Question({ question, handleLoading, setCurrentGist }) {
 }
 
 function Gist({ gist, handleClose }) {
-
-  if (gist){
-  const formatedGist = gist.split(".com/").pop();
+  if (gist) {
+    const formatedGist = gist.split(".com/").pop();
     return (
-      <Modal title="Exemplo de codigo" handleClose={() => handleClose(undefined)}>
+      <Modal
+        title="Exemplo de codigo"
+        handleClose={() => handleClose(undefined)}
+      >
         <ContainerGist>
           <ReactEmbedGist gist={formatedGist} />
         </ContainerGist>
       </Modal>
     );
-  }else{
+  } else {
     return null;
   }
 }
@@ -368,6 +392,8 @@ function Home() {
   const [showNewQuestion, setShowNewQuestion] = useState();
 
   const [currentGist, setCurrentGist] = useState(undefined);
+
+  const [search, setSearch] = useState();
 
   useEffect(() => {
     setShowLoading(true);
@@ -393,20 +419,31 @@ function Home() {
     setReload(Math.random());
   };
 
+
   return (
     <>
       {showLoading && <Loading />}
-      <Gist gist={currentGist} handleClose={setCurrentGist}/>
+      <Gist gist={currentGist} handleClose={setCurrentGist} />
       {showNewQuestion && (
-        <Modal title="Faça uma pergunta" handleClose={() => setShowNewQuestion(false)}>
-          <NewQuestion handleReload={handleReload} handleLoading={setShowLoading} />
+        <Modal
+          title="Faça uma pergunta"
+          handleClose={() => setShowNewQuestion(false)}
+        >
+          <NewQuestion
+            handleReload={handleReload}
+            handleLoading={setShowLoading}
+          />
         </Modal>
       )}
       <Container>
         <Header>
           <Logo src={logo} onClick={handleReload} />
           <SearchBar>
-            <Input id="search" type="search" label="Procure" />
+            <Input
+              id="search"
+              type="search"
+              label="Procure"
+            />
             <button>pesquisar</button>
           </SearchBar>
           <IconSignOut onClick={handleSignOut} />
@@ -416,7 +453,7 @@ function Home() {
             <Profile
               handleReload={handleReload}
               setShowLoading={setShowLoading}
-            // setMessage={setMessage}
+              // setMessage={setMessage}
             />
           </ProfileContainer>
           <FeedContainer>
@@ -429,7 +466,9 @@ function Home() {
             ))}
           </FeedContainer>
           <ActionsContainer>
-            <button onClick={() => setShowNewQuestion(true)}>Fazer uma pergunta</button>
+            <button onClick={() => setShowNewQuestion(true)}>
+              Fazer uma pergunta
+            </button>
           </ActionsContainer>
         </Content>
       </Container>
