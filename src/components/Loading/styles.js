@@ -11,8 +11,6 @@ export const Container = styled.div`
   height: 100vh;
   position: absolute;
   background-color: #333c;
-  font-size: 1.2em;
-  font-weight: bold;
 
   z-index: 99;
 
@@ -20,15 +18,17 @@ export const Container = styled.div`
   justify-content: center;
   align-items: center;
   flex-direction: column;
-  gap: 10px;
 
   user-select: none;
 
-  >img{
+  > img {
     width: 100px;
     height: 100px;
     border-radius: 50%;
+    opacity: 0.8;
+    margin-bottom: 10px;
+    border: 2px solid var(--dark);
 
-    animation: ${spin} 1.8s linear infinite;
+    animation: ${spin} 1s linear infinite;
   }
 `;

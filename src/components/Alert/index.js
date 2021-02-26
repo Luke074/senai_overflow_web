@@ -1,25 +1,20 @@
-import { } from "./style";
-import { Container } from "./style";
-import { useRef, useEffect } from "react";
+import { useEffect, useRef } from "react";
+import { Container } from "./styles";
 
 function Alert({ message, type, handleClose }) {
-
   const containerRef = useRef();
 
   useEffect(() => {
-
     if (message) {
       containerRef.current.style.width = "300px";
 
       setTimeout(() => {
-        handleClose(undefined)
-      }, 4000);
-
+        handleClose(undefined);
+      }, 5000);
     } else {
       containerRef.current.style.width = "0px";
     }
-
-  }, [message]);
+  }, [message, handleClose]);
 
   return (
     <Container type={type} ref={containerRef}>

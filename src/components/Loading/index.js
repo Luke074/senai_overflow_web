@@ -1,13 +1,12 @@
-import {} from "./style";
-import { Container } from "./style";
+import { Container } from "./styles";
 
-import imgReload from "../../assets/reload.png"
+import imgLogo from "../../assets/logo.png";
 
 function Loading() {
-  return(
+  return (
     <Container>
-      <img src={imgReload}/>
-      Carregando ...
+      <img src={imgLogo} />
+      Carregando...
     </Container>
   );
 }

@@ -7,12 +7,11 @@ export const Container = styled.div`
   display: flex;
   flex-direction: column;
 
-  >label{
+  > label {
     font-size: 14px;
     margin-bottom: 2px;
   }
-  >select{
 
+  > select {
   }
 `;
-

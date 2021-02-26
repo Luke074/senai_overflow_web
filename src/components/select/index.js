@@ -1,5 +1,5 @@
-import { Container } from "./style";
 import { forwardRef } from "react";
+import { Container } from "./styles";
 
 const Select = forwardRef(
   ({ id, label, value, handler, children, ...rest }, ref) => {

@@ -1,5 +1,5 @@
-import api from "./api";
 import jwtDecode from "jwt-decode";
+import { api } from "./api";
 
 const USER_KEY = "@user";
 
@@ -36,17 +36,15 @@ export const isSignedIn = () => {
   if (user && user.token) {
     const jwtDecoded = jwtDecode(user.token);
 
-    const nowTime = Date.now() /1000 | 0;
+    const nowTime = (Date.now() / 1000) | 0;
 
-    if(jwtDecoded.exp < nowTime){
+    if (jwtDecoded.exp < nowTime) {
       return signOut();
     }
 
     api.defaults.headers.common["Authorization"] = `Bearer ${user.token}`;
-
     return true;
-  } else {
-    return false;
   }
 
+  return false;
 };

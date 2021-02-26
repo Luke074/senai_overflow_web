@@ -6,38 +6,40 @@ export const Container = styled.div`
   right: 0;
 
   width: 0px;
-  height: 100px;
+  height: 80px;
   margin: 10px;
 
   transition: width 0.4s;
 
   border-radius: 4px;
-  background-color: ${(props) => props.type === "error" ? "#d90429cc" : "#1a68d6" };
+  background-color: ${(props) =>
+    props.type === "error" ? "#d90429aa" : "#04d929aa"};
 
   white-space: nowrap;
+  overflow: hidden;
 
-  >h1{
+  > h1 {
     font-size: 18px;
     margin: 5px;
-    
-    white-space: nowrap;
   }
-  >p{
+
+  > p {
     font-size: 14px;
-    margin: 0px 5px;
+    margin-left: 5px;
   }
 
-  >span{
+  > span {
     position: absolute;
-    top: 15px;
-    right: 20px;
+    top: 5px;
+    right: 10px;
 
-    font-size: 25px;
+    font-size: 20px;
+
     cursor: pointer;
-    transition: 0.3s;
+    transition: 0.2s;
 
-    :hover{
-      color: var(--primary);
+    :hover {
+      color: var(--dark);
     }
   }
 `;
