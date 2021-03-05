@@ -17,14 +17,14 @@ import {
   ContainerGist,
 } from "./styles";
 
-import Input from "../../components/Input";
+import Input from "../../components/input";
 import imgProfile from "../../assets/foto_perfil.png";
 import logo from "../../assets/logo.png";
 import { api } from "../../services/api";
 import { getUser, setUser, signOut } from "../../services/security";
-import Modal from "../../components/Modal";
-import Select from "../../components/Select";
-import Tag from "../../components/Tag";
+import Modal from "../../components/modal";
+import Select from "../../components/select";
+import Tag from "../../components/tag";
 import Loading from "../../components/Loading";
 import { validSquaredImage } from "../../utils";
 import {

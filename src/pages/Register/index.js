@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useHistory } from "react-router-dom";
-import Input from "../../components/Input";
+import Input from "../../components/input";
 import Loading from "../../components/Loading";
 import { api } from "../../services/api";
 import { signIn } from "../../services/security";
